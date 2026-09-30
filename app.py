@@ -2,7 +2,7 @@ import base64
 import pandas as pd
 import streamlit as st
 
-# --- PAGE CONFIGURATION & STYLING WITH 0.60 BACKGROUND OPACITY ---
+# --- PAGE CONFIGURATION & STYLING (OPACITY 0.50 & FIXED BG) ---
 st.set_page_config(
     page_title="ECPL 2026 Auction Tracker", page_icon="🏏", layout="wide"
 )
@@ -20,7 +20,7 @@ try:
   bg_css = f"""
     <style>
     .stApp {{
-        background: linear-gradient(rgba(0, 0, 0, 0.60), rgba(0, 0, 0, 0.60)), url("data:image/jpeg;base64,{bin_str}");
+        background: linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)), url("data:image/jpeg;base64,{bin_str}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -67,16 +67,16 @@ team_list = [
     "Mighty Mavericks",
 ]
 
-# --- PRE-DEFINED CAPTAINS & VICE-CAPTAINS FOR ALL TEAMS ---
+# --- CAPTAINS & VICE-CAPTAINS FOR ALL TEAMS ---
 team_leadership = {
-    "Phantom Blues": {"c": "Shreyash Jaiswal", "vc": "Ahana Kapse"},
-    "White Falcons": {"c": "Captain Falcon", "vc": "VC Falcon"},
-    "Granite Gladiators": {"c": "Captain Gladiator", "vc": "VC Gladiator"},
-    "Rising Champions": {"c": "Captain Champion", "vc": "VC Champion"},
-    "Red Raptors": {"c": "Captain Raptor", "vc": "VC Raptor"},
-    "Team Pirates": {"c": "Captain Pirate", "vc": "VC Pirate"},
-    "Gold Gangsters": {"c": "Captain Gangster", "vc": "VC Gangster"},
-    "Mighty Mavericks": {"c": "Captain Maverick", "vc": "VC Maverick"},
+    "Phantom Blues": {"c": "Shreyash Jaiswal", "vc": "Aahana Kapse"},
+    "White Falcons": {"c": "Vedant Karande", "vc": "Divya Tiwari"},
+    "Granite Gladiators": {"c": "Paresh Dube", "vc": "Jhanvi Bhusare"},
+    "Rising Champions": {"c": "Aziz Azad", "vc": "Sharvori Gawande"},
+    "Red Raptors": {"c": "Swayam Tiwari", "vc": "Thalisha Godhani"},
+    "Team Pirates": {"c": "Prasad Akle", "vc": "Jiya Kurjekar"},
+    "Gold Gangsters": {"c": "Ansh Bisen", "vc": "Palak Jane"},
+    "Mighty Mavericks": {"c": "Aarav Shukla", "vc": "Mahek Mishra"},
 }
 
 # --- INITIALIZE TEAMS ---
@@ -119,7 +119,7 @@ if "players" not in st.session_state:
     )
 
 # --- SIDEBAR CONTROLS ---
-st.sidebar.title("⚙️️ Controls")
+st.sidebar.title("⚙️ Controls")
 with st.sidebar.expander("⚠️ Reset Database"):
   confirm = st.checkbox("Confirm Reset")
   if st.button("🔄 Reset All"):
@@ -145,7 +145,7 @@ c1.metric("Remaining Purse", f"₹ {pb_data['purse']:.2f} Cr")
 c2.metric("Total Spent", f"₹ {pb_spent:.2f} Cr")
 c3.metric("Squad Size", f"{len(pb_data['squad'])} Players")
 
-with st.expander("🛡️ View Phantom Blues Squad Details"):
+with st.expander("🛡️️ View Phantom Blues Squad Details"):
   if pb_data["squad"]:
     for p in pb_data["squad"]:
       st.text(
