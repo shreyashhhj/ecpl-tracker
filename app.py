@@ -2,7 +2,7 @@ import base64
 import pandas as pd
 import streamlit as st
 
-# --- PAGE CONFIGURATION & STYLING WITH INCREASED BACKGROUND OPACITY ---
+# --- PAGE CONFIGURATION & STYLING WITH 0.60 BACKGROUND OPACITY ---
 st.set_page_config(
     page_title="ECPL 2026 Auction Tracker", page_icon="🏏", layout="wide"
 )
@@ -20,7 +20,7 @@ try:
   bg_css = f"""
     <style>
     .stApp {{
-        background: linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)), url("data:image/jpeg;base64,{bin_str}");
+        background: linear-gradient(rgba(0, 0, 0, 0.60), rgba(0, 0, 0, 0.60)), url("data:image/jpeg;base64,{bin_str}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -119,7 +119,7 @@ if "players" not in st.session_state:
     )
 
 # --- SIDEBAR CONTROLS ---
-st.sidebar.title("⚙️ Controls")
+st.sidebar.title("⚙️️ Controls")
 with st.sidebar.expander("⚠️ Reset Database"):
   confirm = st.checkbox("Confirm Reset")
   if st.button("🔄 Reset All"):
