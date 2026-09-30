@@ -1,38 +1,57 @@
+import base64
 import pandas as pd
 import streamlit as st
 
-# --- PAGE CONFIGURATION & STYLING ---
+# --- PAGE CONFIGURATION & STYLING WITH LOCAL BASE64 IMAGE ---
 st.set_page_config(
     page_title="ECPL 2026 Auction Tracker", page_icon="🏏", layout="wide"
 )
 
-st.markdown(
-    """
+
+# Function to encode local image for background
+def get_base64_of_bin_file(bin_file):
+  with open(bin_file, "rb") as f:
+    data = f.read()
+  return base64.b64encode(data).decode()
+
+
+try:
+  bin_str = get_base64_of_bin_file("bg.jpeg")
+  bg_css = f"""
     <style>
-    .stApp {
-        background: linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)), url("bg.jpeg");
+    .stApp {{
+        background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("data:image/jpeg;base64,{bin_str}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
         color: #ffffff;
-    }
-    .stMetric {
+    }}
+    .stMetric {{
         background-color: rgba(22, 27, 34, 0.9);
         padding: 15px;
         border-radius: 12px;
         border: 1px solid #30363d;
-    }
-    .assignment-box {
+    }}
+    .assignment-box {{
         background-color: rgba(22, 27, 34, 0.88);
         padding: 25px;
         border-radius: 15px;
         border: 1px solid #484f58;
         margin-bottom: 20px;
+    }}
+    </style>
+    """
+except Exception:
+  bg_css = """
+    <style>
+    .stApp {
+        background-color: #0e1117;
+        color: #ffffff;
     }
     </style>
-""",
-    unsafe_allow_html=True,
-)
+    """
+
+st.markdown(bg_css, unsafe_allow_html=True)
 
 TOTAL_PURSE_CR = 100.0  # 100 Crores
 
@@ -184,7 +203,6 @@ if selected_player:
       st.session_state.players.at[idx, "Select Team"] = selected_team
       st.session_state.players.at[idx, "Price (Cr)"] = player_price_cr
 
-      # Rebuild teams data
       new_teams = {}
       for t in team_list:
         c_name = team_leadership[t]["c"]
@@ -219,7 +237,7 @@ if selected_player:
     else:
       st.error(
           f"❌ {selected_team} does not have enough remaining purse (₹"
-          f" {current_test_purse if 'current_test_purse' in locals() else current_team_purse:.2f} Cr) for this bid!"
+          f" {current_team_purse:.2f} Cr) for this bid!"
       )
 
 st.markdown("</div>", unsafe_allow_html=True)
@@ -278,7 +296,7 @@ edited_df = st.data_editor(
     use_container_width=True,
 )
 
-if st.button("💾 Update All Squads & Posts" if False else "💾 Update All Squads & Purses"):
+if st.button("💾 Update All Squads & Purses"):
   new_teams = {}
   for t in team_list:
     c_name = team_leadership[t]["c"]
