@@ -1,118 +1,76 @@
 import pandas as pd
 import streamlit as st
 
-# --- PAGE CONFIGURATION ---
+# --- PAGE CONFIGURATION & STYLING ---
 st.set_page_config(
-    page_title="ECPL 2026 Team Squad & Purse Tracker",
-    page_icon="🏏",
-    layout="wide",
+    page_title="ECPL 2026 Auction Tracker", page_icon="🏏", layout="wide"
+)
+
+st.markdown(
+    """
+    <style>
+    .stApp {
+        background: linear-gradient(rgba(0, 0, 0, 0.78), rgba(0, 0, 0, 0.78)), url("bg.jpeg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: #ffffff;
+    }
+    .stMetric {
+        background-color: rgba(22, 27, 34, 0.9);
+        padding: 15px;
+        border-radius: 12px;
+        border: 1px solid #30363d;
+    }
+    .assignment-box {
+        background-color: rgba(22, 27, 34, 0.88);
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #484f58;
+        margin-bottom: 20px;
+    }
+    </style>
+""",
+    unsafe_allow_html=True,
 )
 
 TOTAL_PURSE_CR = 100.0  # 100 Crores
 
-# --- INITIALIZE TEAMS, CAPTAINS & VCs ---
+# --- TEAMS LIST (PHANTOM BLUES FIRST) ---
+team_list = [
+    "Phantom Blues",
+    "White Falcons",
+    "Granite Gladiators",
+    "Rising Champions",
+    "Red Raptors",
+    "Team Pirates",
+    "Gold Gangsters",
+    "Mighty Mavericks",
+]
+
+# --- INITIALIZE TEAMS ---
 if "teams" not in st.session_state:
   st.session_state.teams = {
-      "White Falcons": {
-          "captain": "Vedant Karande",
-          "vc": "Divya Tiwari",
+      t: {
+          "captain": (
+              "Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"
+          ),
+          "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
           "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Vedant Karande (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Divya Tiwari (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Granite Gladiators": {
-          "captain": "Paresh Dube",
-          "vc": "Jhanvi Bhusare",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Paresh Dube (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Jhanvi Bhusare (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Rising Champions": {
-          "captain": "Aziz Azad",
-          "vc": "Sharwari Gawande",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Aziz Azad (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Sharwari Gawande (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Red Raptors": {
-          "captain": "Swayam Tiwari",
-          "vc": "Thalisha Godhani",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Swayam Tiwari (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Thalisha Godhani (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Phantom Blues": {
-          "captain": "Shreyash Jaiswal",
-          "vc": "Ahana Kapse",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Shreyash Jaiswal (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Ahana Kapse (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Team Pirates": {
-          "captain": "Prasad Akle",
-          "vc": "Jiya Kurjekar",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Prasad Akle (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Jiya Kurjekar (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
-      "Gold Gangsters": {
-          "captain": "Ansh Bisen",
-          "vc": "Palak Jane",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Ansh Bisen (C)", "Price": 0.0, "Role": "Captain"},
-              {"Name": "Palak Jane (VC)", "Price": 0.0, "Role": "Vice-Captain"},
-          ],
-      },
-      "Mighty Mavericks": {
-          "captain": "Aarav Shukla",
-          "vc": "Mahek Mishra",
-          "purse": TOTAL_PURSE_CR,
-          "squad": [
-              {"Name": "Aarav Shukla (C)", "Price": 0.0, "Role": "Captain"},
-              {
-                  "Name": "Mahek Mishra (VC)",
-                  "Price": 0.0,
-                  "Role": "Vice-Captain",
-              },
-          ],
-      },
+          "squad": (
+              [
+                  {
+                      "Name": "Shreyash Jaiswal (C)",
+                      "Price": 0.0,
+                      "Role": "Captain",
+                  },
+                  {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
+              ]
+              if t == "Phantom Blues"
+              else []
+          ),
+      }
+      for t in team_list
   }
 
 # --- LOAD REGISTERED PLAYERS FROM EXCEL FILE ---
@@ -128,175 +86,237 @@ if "players" not in st.session_state:
           "Name": str(row.get("Full Name", "")).strip(),
           "Year": str(row.get("Year of Study", "")).strip() + " Year",
           "Role": str(row.get("Player Primary Role", "")).strip(),
-          "Status": "Available",
-          "Assigned Team": "-",
-          "Purchase Price (Cr)": 0.0,
+          "Select Team": "Available",
+          "Price (Cr)": 0.0,
       })
     st.session_state.players = pd.DataFrame(players_list)
   except Exception as e:
     st.error(f"Error loading player registration file: {e}")
     st.session_state.players = pd.DataFrame(
-        columns=[
-            "ID",
-            "Name",
-            "Year",
-            "Role",
-            "Status",
-            "Assigned Team",
-            "Purchase Price (Cr)",
-        ]
+        columns=["ID", "Name", "Year", "Role", "Select Team", "Price (Cr)"]
     )
 
-# --- SIDEBAR CONTROLS WITH SAFE RESET ---
-st.sidebar.title("⚙️ Database Management")
-
-# Safe reset logic using expander or confirmation checkbox
-with st.sidebar.expander("⚠️ Danger Zone (Reset)"):
-  confirm_reset = st.checkbox("I want to reset all data")
-  if st.button("🔄 Confirm Reset All Data", type="primary"):
-    if confirm_reset:
+# --- SIDEBAR CONTROLS ---
+st.sidebar.title("⚙️ Controls")
+with st.sidebar.expander("⚠️ Reset Database"):
+  confirm = st.checkbox("Confirm Reset")
+  if st.button("🔄 Reset All"):
+    if confirm:
       st.session_state.clear()
-      st.success("Data reset successfully!")
+      st.success("Reset successful!")
       st.rerun()
-    else:
-      st.warning("Please check the confirmation box above first!")
-
-st.sidebar.markdown("---")
-st.sidebar.info(
-    "💡 **Instructions:**\n1. Select a team below to assign players and"
-    " enter price in Crores (Cr).\n2. View squads and remaining purse live!"
-)
 
 # --- MAIN HEADER ---
-st.title("⚡ ECPL 2026 — Team Squad & Purse Tracker (Cr) 🏏")
+st.title("⚡ ECPL 2026 — Live Squad & Purse Tracker 🏏")
 st.markdown(
-    "Monitor team budgets, squad compositions, and player distribution in"
-    " Crores."
+    "Monitor live team budgets, manage player allocations, and track the"
+    " auction seamlessly."
 )
 st.markdown("---")
 
-# --- HIGHLIGHT YOUR TEAM (PHANTOM BLUES) ---
-st.subheader("🔥 Your Team Dashboard (Phantom Blues)")
+# --- YOUR TEAM HIGHLIGHT (PHANTOM BLUES) ---
 pb_data = st.session_state.teams["Phantom Blues"]
 pb_spent = TOTAL_PURSE_CR - pb_data["purse"]
-pb_c1, pb_c2, pb_c3 = st.columns(3)
-pb_c1.metric("Remaining Purse", f"₹ {pb_data['purse']:.2f} Cr")
-pb_c2.metric("Total Spent", f"₹ {pb_spent:.2f} Cr")
-pb_c3.metric("Squad Size", f"{len(pb_data['squad'])} Players")
+st.subheader("🔥 Your Team: Phantom Blues Dashboard")
+c1, c2, c3 = st.columns(3)
+c1.metric("Remaining Purse", f"₹ {pb_data['purse']:.2f} Cr")
+c2.metric("Total Spent", f"₹ {pb_spent:.2f} Cr")
+c3.metric("Squad Size", f"{len(pb_data['squad'])} Players")
 
 with st.expander("🛡️ View Phantom Blues Squad Details"):
-  for p in pb_data["squad"]:
-    st.text(
-        f"• {p['Name']} — Role: {p.get('Role', 'Player')} (Price: ₹"
-        f" {p['Price']:.2f} Cr)"
-    )
+  if pb_data["squad"]:
+    for p in pb_data["squad"]:
+      st.text(
+          f"• {p['Name']} — Role: {p.get('Role', 'Player')} (Price: ₹"
+          f" {p.get('Price', 0.0):.2f} Cr)"
+      )
+  else:
+    st.text("No players assigned yet.")
 
 st.markdown("---")
 
-# --- ASSIGNMENT SECTION (MANAGE TEAMS) ---
-st.subheader("📝 Assign / Manage Team Squads")
+# --- SYSTEMATIC ASSIGNMENT SECTION ---
+st.subheader("📝 Assign / Manage Team Squads (Quick Bidding Panel)")
 
+st.markdown('<div class="assignment-box">', unsafe_allow_html=True)
 col_asg1, col_asg2, col_asg3 = st.columns(3)
 
 df = st.session_state.players
-available_df = df[df["Status"] == "Available"]
+available_df = df[df["Select Team"] == "Available"]
 available_players = available_df["Name"].tolist()
 
 with col_asg1:
   selected_team = st.selectbox(
-      "Select Team to Update:", list(st.session_state.teams.keys())
+      "🛡️ Select Team to Update:", list(st.session_state.teams.keys())
   )
 
 with col_asg2:
   if available_players:
     selected_player = st.selectbox(
-        "Select Available Player:", available_players
+        "👤 Select Available Player:", available_players
     )
   else:
     selected_player = None
-    st.info("All players assigned!")
+    st.info("All players have been assigned!")
 
 with col_asg3:
   player_price_cr = st.number_input(
-      "Player Cost / Price (in Cr):",
+      "💰 Final Sold Price (in Cr):",
       min_value=0.0,
+      max_value=100.0,
       step=0.1,
       value=0.5,
       format="%.2f",
   )
 
-if selected_player:
-  if st.button("➕ Assign Player to Team", type="primary"):
-    if st.session_state.teams[selected_team]["purse"] >= player_price_cr:
-      # Deduct from team purse
-      st.session_state.teams[selected_team]["purse"] -= player_price_cr
-      # Add to team squad
-      st.session_state.teams[selected_team]["squad"].append({
-          "Name": selected_player,
-          "Price": player_price_cr,
-          "Role": df[df["Name"] == selected_player]["Role"].values[0],
-      })
-      # Update main dataframe
-      idx = df[df["Name"] == selected_player].index[0]
-      st.session_state.players.at[idx, "Status"] = "Assigned"
-      st.session_state.players.at[idx, "Assigned Team"] = selected_team
-      st.session_state.players.at[idx, "Purchase Price (Cr)"] = player_price_cr
+st.markdown("<br>", unsafe_allow_html=True)
 
+if selected_player:
+  if st.button(
+      "⚡ Confirm & Assign Player to Team", type="primary", use_container_width=True
+  ):
+    current_team_purse = st.session_state.teams[selected_team]["purse"]
+    if current_team_purse >= player_price_cr:
+      idx = df[df["Name"] == selected_player].index[0]
+      st.session_state.players.at[idx, "Select Team"] = selected_team
+      st.session_state.players.at[idx, "Price (Cr)"] = player_price_cr
+
+      new_teams = {
+          t: {
+              "captain": (
+                  "Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"
+              ),
+              "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
+              "purse": TOTAL_PURSE_CR,
+              "squad": (
+                  [
+                      {
+                          "Name": "Shreyash Jaiswal (C)",
+                          "Price": 0.0,
+                          "Role": "Captain",
+                      },
+                      {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
+                  ]
+                  if t == "Phantom Blues"
+                  else []
+              ),
+          }
+          for t in team_list
+      }
+
+      for i, row in st.session_state.players.iterrows():
+        assigned_t = row["Select Team"]
+        p_price = float(row["Price (Cr)"])
+        if assigned_t != "Available":
+          new_teams[assigned_t]["purse"] -= p_price
+          new_teams[assigned_t]["squad"].append({
+              "Name": row["Name"],
+              "Role": row["Role"],
+              "Price": p_price,
+          })
+
+      st.session_state.teams = new_teams
       st.success(
-          f"✅ {selected_player} successfully added to {selected_team} for ₹"
+          f"✅ {selected_player} successfully sold to {selected_team} for ₹"
           f" {player_price_cr:.2f} Cr!"
       )
       st.rerun()
     else:
       st.error(
-          f"❌ {selected_team} does not have enough remaining purse for this"
-          " amount!"
+          f"❌ {selected_team} does not have enough remaining purse (₹"
+          f" {current_team_purse:.2f} Cr) for this bid!"
       )
 
+st.markdown("</div>", unsafe_allow_html=True)
 st.markdown("---")
 
-# --- OVERALL TEAMS OVERVIEW GRID ---
-st.subheader("📊 All 8 Teams Overview & Squads")
-
-team_names = list(st.session_state.teams.keys())
-for i in range(0, len(team_names), 4):
+# --- ALL TEAMS OVERVIEW ---
+st.subheader("📊 All 8 Teams Status Overview")
+t_names = list(st.session_state.teams.keys())
+for i in range(0, len(t_names), 4):
   cols = st.columns(4)
   for j in range(4):
-    if i + j < len(team_names):
-      t_name = team_names[i + j]
-      data = st.session_state.teams[t_name]
+    if i + j < len(t_names):
+      t = t_names[i + j]
+      data = st.session_state.teams[t]
+      spent = TOTAL_PURSE_CR - data["purse"]
       with cols[j]:
-        spent = TOTAL_PURSE_CR - data["purse"]
-        st.markdown(f"### **{t_name}**")
-        st.write(f"👑 **C:** {data['captain']}")
-        st.write(f"🛡️ **VC:** {data['vc']}")
-        st.metric(
-            label="Remaining Purse",
-            value=f"₹ {data['purse']:.2f} Cr",
-            delta=f"-₹ {spent:.2f} Cr",
-        )
-        st.write(f"👥 **Squad:** {len(data['squad'])} Players")
-        with st.expander(f"Inspect {t_name}"):
-          for p in data["squad"]:
-            st.text(
-                f"- {p['Name']}"
-                + (f" (₹ {p['Price']:.2f} Cr)" if p["Price"] > 0 else "")
-            )
+        st.markdown(f"### **{t}**")
+        st.metric("Purse Left", f"₹ {data['purse']:.2f} Cr", f"-₹ {spent:.2f} Cr")
+        st.write(f"👥 Squad: {len(data['squad'])} Players")
+        with st.expander(f"View {t}"):
+          if data["squad"]:
+            for sp in data["squad"]:
+              st.text(
+                  f"- {sp['Name']}"
+                  + (
+                      f" (₹ {sp.get('Price', 0.0):.2f} Cr)"
+                      if sp.get("Price", 0.0) > 0
+                      else ""
+                  )
+              )
+          else:
+            st.text("Empty squad")
   st.markdown("---")
 
-# --- MASTER PLAYER DIRECTORY TABLE ---
-st.subheader("📋 Master Player Directory (All 113 Registered Players)")
-
-search_q = st.text_input(
-    "Search Player by Name or Role:",
-    placeholder="Type name to search...",
+# --- MASTER PLAYER DIRECTORY & INLINE TABLE ---
+st.subheader("📋 Master Player Directory & Inline Table")
+st.info(
+    "👉 You can also edit values directly in the table below and click"
+    " **'💾 Update All Squads & Purses'**."
 )
-if search_q:
-  display_df = df[
-      df["Name"].str.contains(search_q, case=False, na=False)
-      | df["Role"].str.contains(search_q, case=False, na=False)
-  ]
-else:
-  display_df = df
 
-st.dataframe(display_df, use_container_width=True, hide_index=True)
+team_options = ["Available"] + team_list
+
+edited_df = st.data_editor(
+    st.session_state.players,
+    column_config={
+        "Select Team": st.column_config.SelectboxColumn(
+            "Assign Team", options=team_options, required=True
+        ),
+        "Price (Cr)": st.column_config.NumberColumn(
+            "Price (Cr)", min_value=0.0, max_value=100.0, step=0.1, format="%.2f"
+        ),
+    },
+    disabled=["ID", "Name", "Year", "Role"],
+    hide_index=True,
+    use_container_width=True,
+)
+
+if st.button("💾 Update All Squads & Purses"):
+  new_teams = {
+      t: {
+          "captain": ("Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"),
+          "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
+          "purse": TOTAL_PURSE_CR,
+          "squad": (
+              [
+                  {
+                      "Name": "Shreyash Jaiswal (C)",
+                      "Price": 0.0,
+                      "Role": "Captain",
+                  },
+                  {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
+              ]
+              if t == "Phantom Blues"
+              else []
+          ),
+      }
+      for t in team_list
+  }
+
+  for idx, row in edited_df.iterrows():
+    assigned_t = row["Select Team"]
+    p_price = float(row["Price (Cr)"])
+    if assigned_t != "Available":
+      new_teams[assigned_t]["purse"] -= p_price
+      new_teams[assigned_t]["squad"].append({
+          "Name": row["Name"],
+          "Role": row["Role"],
+          "Price": p_price,
+      })
+
+  st.session_state.teams = new_teams
+  st.session_state.players = edited_df
+  st.success("🎉 All team squads and remaining purses updated successfully!")
+  st.rerun()
