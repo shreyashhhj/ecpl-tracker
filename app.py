@@ -2,7 +2,7 @@ import base64
 import pandas as pd
 import streamlit as st
 
-# --- PAGE CONFIGURATION & STYLING (FIXED BACKGROUND FIT & CENTERING) ---
+# --- PAGE CONFIGURATION & STYLING WITH INCREASED BACKGROUND OPACITY ---
 st.set_page_config(
     page_title="ECPL 2026 Auction Tracker", page_icon="🏏", layout="wide"
 )
@@ -20,11 +20,10 @@ try:
   bg_css = f"""
     <style>
     .stApp {{
-        background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url("data:image/jpeg;base64,{bin_str}");
-        background-size: 60% auto;
-        background-position: center center;
+        background: linear-gradient(rgba(0, 0, 0, 0.50), rgba(0, 0, 0, 0.50)), url("data:image/jpeg;base64,{bin_str}");
+        background-size: cover;
+        background-position: center;
         background-repeat: no-repeat;
-        background-attachment: fixed;
         color: #ffffff;
     }}
     .stMetric {{
