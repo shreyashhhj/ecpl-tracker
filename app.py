@@ -48,30 +48,33 @@ team_list = [
     "Mighty Mavericks",
 ]
 
+# --- PRE-DEFINED CAPTAINS & VICE-CAPTAINS FOR ALL TEAMS ---
+team_leadership = {
+    "Phantom Blues": {"c": "Shreyash Jaiswal", "vc": "Ahana Kapse"},
+    "White Falcons": {"c": "Captain Falcon", "vc": "VC Falcon"},
+    "Granite Gladiators": {"c": "Captain Gladiator", "vc": "VC Gladiator"},
+    "Rising Champions": {"c": "Captain Champion", "vc": "VC Champion"},
+    "Red Raptors": {"c": "Captain Raptor", "vc": "VC Raptor"},
+    "Team Pirates": {"c": "Captain Pirate", "vc": "VC Pirate"},
+    "Gold Gangsters": {"c": "Captain Gangster", "vc": "VC Gangster"},
+    "Mighty Mavericks": {"c": "Captain Maverick", "vc": "VC Maverick"},
+}
+
 # --- INITIALIZE TEAMS ---
 if "teams" not in st.session_state:
-  st.session_state.teams = {
-      t: {
-          "captain": (
-              "Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"
-          ),
-          "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
-          "purse": TOTAL_PURSE_CR,
-          "squad": (
-              [
-                  {
-                      "Name": "Shreyash Jaiswal (C)",
-                      "Price": 0.0,
-                      "Role": "Captain",
-                  },
-                  {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
-              ]
-              if t == "Phantom Blues"
-              else []
-          ),
-      }
-      for t in team_list
-  }
+  st.session_state.teams = {}
+  for t in team_list:
+    c_name = team_leadership[t]["c"]
+    vc_name = team_leadership[t]["vc"]
+    st.session_state.teams[t] = {
+        "captain": c_name,
+        "vc": vc_name,
+        "purse": TOTAL_PURSE_CR,
+        "squad": [
+            {"Name": f"{c_name} (C)", "Price": 0.0, "Role": "Captain"},
+            {"Name": f"{vc_name} (VC)", "Price": 0.0, "Role": "VC"},
+        ],
+    }
 
 # --- LOAD REGISTERED PLAYERS FROM EXCEL FILE ---
 if "players" not in st.session_state:
@@ -181,28 +184,20 @@ if selected_player:
       st.session_state.players.at[idx, "Select Team"] = selected_team
       st.session_state.players.at[idx, "Price (Cr)"] = player_price_cr
 
-      new_teams = {
-          t: {
-              "captain": (
-                  "Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"
-              ),
-              "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
-              "purse": TOTAL_PURSE_CR,
-              "squad": (
-                  [
-                      {
-                          "Name": "Shreyash Jaiswal (C)",
-                          "Price": 0.0,
-                          "Role": "Captain",
-                      },
-                      {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
-                  ]
-                  if t == "Phantom Blues"
-                  else []
-              ),
-          }
-          for t in team_list
-      }
+      # Rebuild teams data
+      new_teams = {}
+      for t in team_list:
+        c_name = team_leadership[t]["c"]
+        vc_name = team_leadership[t]["vc"]
+        new_teams[t] = {
+            "captain": c_name,
+            "vc": vc_name,
+            "purse": TOTAL_PURSE_CR,
+            "squad": [
+                {"Name": f"{c_name} (C)", "Price": 0.0, "Role": "Captain"},
+                {"Name": f"{vc_name} (VC)", "Price": 0.0, "Role": "VC"},
+            ],
+        }
 
       for i, row in st.session_state.players.iterrows():
         assigned_t = row["Select Team"]
@@ -224,7 +219,7 @@ if selected_player:
     else:
       st.error(
           f"❌ {selected_team} does not have enough remaining purse (₹"
-          f" {current_team_purse:.2f} Cr) for this bid!"
+          f" {current_test_purse if 'current_test_purse' in locals() else current_team_purse:.2f} Cr) for this bid!"
       )
 
 st.markdown("</div>", unsafe_allow_html=True)
@@ -283,27 +278,20 @@ edited_df = st.data_editor(
     use_container_width=True,
 )
 
-if st.button("💾 Update All Squads & Purses"):
-  new_teams = {
-      t: {
-          "captain": ("Shreyash Jaiswal" if t == "Phantom Blues" else "Captain"),
-          "vc": "Ahana Kapse" if t == "Phantom Blues" else "Vice-Captain",
-          "purse": TOTAL_PURSE_CR,
-          "squad": (
-              [
-                  {
-                      "Name": "Shreyash Jaiswal (C)",
-                      "Price": 0.0,
-                      "Role": "Captain",
-                  },
-                  {"Name": "Ahana Kapse (VC)", "Price": 0.0, "Role": "VC"},
-              ]
-              if t == "Phantom Blues"
-              else []
-          ),
-      }
-      for t in team_list
-  }
+if st.button("💾 Update All Squads & Posts" if False else "💾 Update All Squads & Purses"):
+  new_teams = {}
+  for t in team_list:
+    c_name = team_leadership[t]["c"]
+    vc_name = team_leadership[t]["vc"]
+    new_teams[t] = {
+        "captain": c_name,
+        "vc": vc_name,
+        "purse": TOTAL_PURSE_CR,
+        "squad": [
+            {"Name": f"{c_name} (C)", "Price": 0.0, "Role": "Captain"},
+            {"Name": f"{vc_name} (VC)", "Price": 0.0, "Role": "VC"},
+        ],
+    }
 
   for idx, row in edited_df.iterrows():
     assigned_t = row["Select Team"]
